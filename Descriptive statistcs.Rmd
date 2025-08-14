@@ -1,0 +1,115 @@
+---
+title: "Descriptive Statistics
+output: html_notebook
+---
+
+
+## Packages
+```{r}
+packages <- c('Hmisc','descr','tableone','kableExtra','semTools','qualvar','labelled','tidyverse', 'knitr')
+```
+
+```{r}
+install.packages("tidyverse")
+```
+
+
+```{r}
+library(dplyr)
+library(tidyverse)
+```
+
+```{r}
+packages <- c("dplyr", "ggplot2", "tidyverse", "readr")
+purrr::walk(packages, library, character.only = TRUE)
+```
+
+
+## Uploading data
+```{r}
+Digital_Mentalhealth <- read.csv(file = "/Users/chandinikotha/Desktop/Project and visualizations/digital_diet_mental_health.csv")
+```
+
+
+```{r}
+summary(object = Digital_Mentalhealth)
+```
+
+
+
+##Calculating total screen time
+```{r}
+
+Digital_Mentalhealth$Total_screen_time <- Digital_Mentalhealth$daily_screen_time_hours + Digital_Mentalhealth $phone_usage_hours + Digital_Mentalhealth $laptop_usage_hours + Digital_Mentalhealth $tablet_usage_hours +Digital_Mentalhealth $tv_usage_hours + Digital_Mentalhealth $social_media_hours
+```
+
+```{r}
+summary(Digital_Mentalhealth$Total_screen_time)
+```
+
+
+## STATISTICAL TESTS
+
+### INDEPENDENT T TEST
+
+1. Use of wellness apps and mental health
+Null Hypothesis: There is no association between use of wellness apps and mental health.
+Alternate Hypothesis: There is no association between use of wellness apps and mental health.
+```{r}
+Digital_Mentalhealth %>%
+  group_by(uses_wellness_apps) %>%
+  summarize(mean_mhs = mean(mental_health_score, na.rm = TRUE),
+            sd_mhs = sd(mental_health_score, na.rm = TRUE),
+            n = n())
+```
+
+
+```{r}
+t.test(mental_health_score ~ uses_wellness_apps, data = Digital_Mentalhealth)
+```
+Interpretation: The results showed no statistically significant association between the two groups, t(1692.6) = -1.12, p = 0.2613. The mean mental health score for non-users was 49.30, while for wellness app users it was 50.20. The 95% confidence interval for the difference in means ranged from -2.46 to 0.67, which includes zero. We accept the null hypothesis and conclude that use of wellness apps was not significantly associated with differences in mental health scores. While app users had a slightly higher average score, the difference was small and not statistically meaningful.
+
+
+
+Creating 2 groups in screen time to differentiate who has low and high screen time
+```{r}
+Digital_Mentalhealth <- Digital_Mentalhealth %>%
+  mutate(screen_time_group = case_when(
+    Total_screen_time < 15 ~ "Low",
+    Total_screen_time >= 15 ~ "High"
+  ))
+```
+
+2. Screen time and mental health
+Null Hypothesis: There is no association between screen time and mental health.
+Alternate Hypothesis: There is no association between screen time and mental health.
+```{r}
+Digital_Mentalhealth %>%
+  group_by(screen_time_group) %>%
+  summarize(mean_mhs = mean(mental_health_score, na.rm = TRUE),
+            sd_mhs = sd(mental_health_score, na.rm = TRUE),
+            n = n())
+```
+
+```{r}
+t.test(mental_health_score ~ screen_time_group, data = Digital_Mentalhealth)
+```
+Interpretation:  The results showed no statistically significant association between the two groups, t(1846.6) = 0.56997, p = 0.5688. The mean mental health score for low screen time users was 49.30, while for high screen time users it was 49.8. The 95% confidence interval for the difference in means ranged from -1.1 to 2.005, which includes zero. We accept the null hypothesis and conclude that screen time was not significantly associated with differences in mental health scores. While low screen time users had a slightly lower average score, the difference was small and not statistically meaningful.
+
+
+
+
+#### ANOVA
+
+
+# Between mental health - Location type:
+Null Hypothesis: Mental health score is the same across various location types.
+Alternate Hypothesis: Mental health score is different across various location types.
+Statistical test:
+```{r}
+anova_result <- aov(mental_health_score ~ location_type, data = Digital_Mentalhealth)
+summary(anova_result)
+```
+Interpretation:  The one-way ANOVA was conducted to compare the effect of mental health score across various locations. The test returned F(2, 1997) = 0.252, with a p-value = 0.778.
+Since the p-value > 0.05, we accept the null hypothesis. This indicates that there is no statistically significant difference in mental health score in various location types like rural and urban.
+
