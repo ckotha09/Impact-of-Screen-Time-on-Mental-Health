@@ -1,4 +1,5 @@
-## 🩺 Impact of Screen Time on Mental Health
+## PREDICTING MENTAL HEALTH SCORES BASED ON WELLNESS APP USAGE AND LIFESTYLE FACTORS: A CROSS-SECTIONAL ANALYSIS
+
 
 ## Objective
 The objective of this project is to investigate the relationship between screen time and mental health outcomes. The study examines how various forms of screen usage (phone, laptop, tablet, TV, social media) relate to mental health scores, depression, anxiety, sleep quality, and lifestyle factors.
